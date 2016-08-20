@@ -62,7 +62,7 @@ namespace Google.Protobuf
         /// <summary>
         /// Buffer of data read from the stream or provided at construction time.
         /// </summary>
-        private readonly byte[] buffer;
+        private byte[] buffer;
 
         /// <summary>
         /// The index of the buffer at which we need to refill from the stream (if there is one).
@@ -280,6 +280,33 @@ namespace Google.Protobuf
             {
                 input.Dispose();
             }
+        }
+
+        /// <summary>
+        /// If reading from flat array, resets the input buffer. Otherwise,
+        /// throws an InvalidOperationException.
+        /// </summary>
+        public void Reset(byte[] buffer)
+        {
+            Reset(buffer, 0, buffer.Length);
+        }
+
+        /// <summary>
+        /// If reading from flat array, resets the input buffer. Otherwise,
+        /// throws an InvalidOperationException.
+        /// </summary>
+        /// 
+        public void Reset(byte[] buffer, int bufferPos, int bufferSize)
+        {
+            if (input != null)
+            {
+                throw new InvalidOperationException(
+                    "Reset can only be called on CodedInputStreams that are " +
+                    "reading from a flat array.");
+            }
+            this.buffer = buffer;
+            this.bufferPos = bufferPos;
+            this.bufferSize = bufferSize;
         }
 
         #region Validation

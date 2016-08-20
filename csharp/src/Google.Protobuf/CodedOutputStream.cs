@@ -66,7 +66,7 @@ namespace Google.Protobuf
         public static readonly int DefaultBufferSize = 4096;
 
         private readonly bool leaveOpen;
-        private readonly byte[] buffer;
+        private byte[] buffer;
         private readonly int limit;
         private int position;
         private readonly Stream output;
@@ -159,6 +159,38 @@ namespace Google.Protobuf
                 }
                 return position;
             }
+        }
+
+        /// <summary>
+        /// If writing to flat array, resets the position to zero. Otherwise,
+        /// throws an InvalidOperationException.
+        /// </summary>
+        public void Reset()
+        {
+            if (output != null)
+            {
+                throw new InvalidOperationException(
+                    "Reset can only be called on CodedOutputStreams that are " +
+                    "writing to a flat array.");
+            }
+            position = 0;
+        }
+
+        /// <summary>
+        /// If writing to flat array, resets the position to zero and
+        /// replaces the current buffer with a new buffer. Otherwise,
+        /// throws an InvalidOperationException.
+        /// </summary>
+        public void Reset(byte[] flatArray)
+        {
+            if (output != null)
+            {
+                throw new InvalidOperationException(
+                    "Reset can only be called on CodedOutputStreams that are " +
+                    "writing to a flat array.");
+            }
+            buffer = flatArray;
+            position = 0;
         }
 
         #region Writing of values (not including tags)
